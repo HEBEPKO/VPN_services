@@ -44,7 +44,7 @@ server.on('connect', (req, clientSocket, head) => {
 
     const [hostname, potr] = req.url.split(':');
 
-    const serverSocket = net.connect(port || 443, hostname, () => {
+    const serverSocket = net.connect(PORT || 443, hostname, () => {
         clientSocket.write('HTTP/1.1 200 Connection Establised\(\r\n\r\\)n');
 
         serverSocket.write(head);
@@ -58,9 +58,8 @@ server.on('connect', (req, clientSocket, head) => {
         clientSocket.end('HTTP/1.1 502 Bad Gateway\(\r\n\r\\)n');
     });
 
-    clientSocket.on('error', () => {
-        serverSocket.end();
-    });
+    clientSocket.on('error', () => serverSocket.end());
+    serverSocket.on('error', () => clientSocket.end());
 });
 
 server.listen(PORT, () => {
